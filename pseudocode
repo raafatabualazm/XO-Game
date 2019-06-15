@@ -1,0 +1,160 @@
+def markThisPlace()
+	if characterToPlay == x
+		if state[xpos][ypos - 1] == 0 //Empty cell
+			Display(xpos*16+2 , ypos*16-2, PointerErase) // Remove the cursor image 
+			Display(xpos*16+2 , ypos*16-2, X) // Calculate the pixel position for top left Corner of X image
+			state[xpos][ypos - 1] = 1 // Mark that X is present here
+			checkForWinner() // Checks whether there is a winner according to the known rules
+			if winner == 1 //There is a winner
+				winner = 0 //Remove the flag for new game
+				characterToPlay = X
+			else // No winner so far
+				checkForDraw()
+				characterToPlay = O // Give turn to O
+	
+	else if characterToPlay == O
+		if state[xpos][ypos - 1] == 0 //Empty cell
+			Display(xpos*16+2 , ypos*16-2, PointerErase) // Remove the cursor image 
+			Display(xpos*16+2 , ypos*16-2, O) // Calculate the pixel position for top left Corner of O image
+			state[xpos][ypos - 1] = 2 // Mark that O is present here
+			checkForWinner() // Checks whether there is a winner according to the known rules
+			if winner == 1 //There is a winner
+				winner = 0 //Remove the flag for new game
+				characterToPlay =  O
+			else // No winner so far
+				checkForDraw()
+				characterToPlay = X // Give turn to X
+
+def moveLeft()
+	if state[xpos][ypos - 1] == 0 // Empty Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, PointerErase) // Remove curso image
+	if state[xpos][ypos - 1] == 1 // X Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, X) // Display X
+	if state[xpos][ypos - 1] == 2 // O Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, O) // Display O
+	if (xpos > 0) // If I am anywhere except the leftmost column
+		xpos -- // Decrease xpos by 1 to move left in the mareix
+	Display(xpos*16+2 , ypos*16-2, Pointer) // Display Pointer
+
+def moveRight()
+	if state[xpos][ypos - 1] == 0 // Empty Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, PointerErase) // Remove curso image
+	if state[xpos][ypos - 1] == 1 // X Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, X) // Display X
+	if state[xpos][ypos - 1] == 2 // O Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, O) // Display O
+	if (xpos < 2) // If I am anywhere except the rightmost column
+		xpos ++		// Increase xpos by 1 to move Right in the mareix
+	Display(xpos*16+2 , ypos*16-2, Pointer) // Display Pointer
+	
+def moveUp()
+	if state[xpos][ypos - 1] == 0 // Empty Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, PointerErase) // Remove curso image
+	if state[xpos][ypos - 1] == 1 // X Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, X) // Display X
+	if state[xpos][ypos - 1] == 2 // O Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, O) // Display O
+	if (ypos > 1) // If I am anywhere except the topmost row
+		xpos -- // Decrease ypos by 1 to move up in the mareix
+	Display(xpos*16+2 , ypos*16-2, Pointer) // Display Pointer
+	
+def moveDown()
+	if state[xpos][ypos - 1] == 0 // Empty Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, PointerErase) // Remove curso image
+	if state[xpos][ypos - 1] == 1 // X Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, X) // Display X
+	if state[xpos][ypos - 1] == 2 // O Cell I am leaving
+		Display(xpos*16+2 , ypos*16-2, O) // Display O
+	if (xpos < 3) // If I am anywhere except the downmost row
+		xpos ++ // Increase ypos by 1 to move down in the mareix
+	Display(xpos*16+2 , ypos*16-2, Pointer) // Display Pointer
+	
+	
+def checkForWinner()
+	z, row = xpos, col = ypos - 1 // Z is the carrier variable for whatever in the cell, row and col hold the current position for the cell in which we called the checkForWinner function
+	// Check entire column
+	sum = 0
+	for i from 0 to 2
+		if state[i][row] == z // if the current cell same as z
+			sum ++
+	if sum == 3 // we have 3 cells in the column that has same letter
+		winner = 1 // There's a winner
+		restart()
+	sum = 0
+	for i from 0 to 2
+		if state[col][i] == z // if the current cell same as z
+			sum ++
+	if sum == 3 // we have 3 cells in the row that has same letter
+		winner = 1 // There's a winner
+		restart()
+	if state[0][0] == z and state[1][1] == z and state[2][2] == z // check left diagonal
+		restart()
+	if state[0][2] == z and state[1][1] == z and state[2][0] == z // check right diagonal
+		restart()
+	
+def restart()
+	if characterToPlay == X // If the winner is X
+		recx++ // Increase X score
+	else
+		recy++ // Increase Y score
+	
+	ClearDisplay()
+	Display(characterToPlay)
+	Display("have won the game")
+	Delay()
+	clearDisplay()
+	Display(0, 47, Background)
+	for i from 0 to 2
+		for j from 0 to 2
+			state[i][j] = 0 //Empty all cells
+
+def checkForDraw()
+	z = 0
+	for i from 0 to 2
+		for j from 0 to 2
+			if state[i][j] == 0 // There is an empty cell
+				z = 1 // flag that there is an empty cell
+	
+	if z == 0 // There is no empty cell and there's no winner
+		ClearDisplay()
+		Display("There's a draw")
+		Delay()
+		clearDisplay()
+		Display(0, 47, Background)
+		for i from 0 to 2
+			for j from 0 to 2
+				state[i][j] = 0 //Empty all cells
+
+def GPIO_PORTE_Handler()
+	if pin 0
+		acknowledge interrut 0 
+		markThisPlace
+	else if pin 1
+		acknowledge interrut 1
+		moveLeft()
+	else if pin 2
+		acknowledge interrut 2
+		moveDown()
+	else if pin 3
+		acknowledge interrut 3
+		moveRigh()
+	else if pin 4
+		acknowledge interrut 4
+		moveUp()
+		
+
+def main
+	Texas_Init()
+	PortE_Init()
+	PortF_Init()
+	Nokia5110_Init()
+	EnableInterrupts()
+	Display(0, 47, Background)
+	for i from 0 to 2
+			for j from 0 to 2
+				state[i][j] = 0 //Empty all cells
+				
+def Delay()
+	time = 100*727240*200/91
+	while time
+		time--
